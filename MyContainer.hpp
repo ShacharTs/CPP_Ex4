@@ -259,6 +259,7 @@ namespace MyContainer {
      */
     template<typename T>
     size_t MyContainer<T>::size() const {
+        return this->_size;
     }
 
     /**
@@ -267,6 +268,7 @@ namespace MyContainer {
      */
     template<typename T>
     bool MyContainer<T>::isEmpty() const {
+        return this->_size == 0;
     }
 
     /**
