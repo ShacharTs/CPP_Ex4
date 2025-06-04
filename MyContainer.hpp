@@ -420,12 +420,24 @@ namespace MyContainer {
         return *current;
     }
 
+    /**
+     * Operator to check if two iterators are equal.
+     * @param other Iterator to compare with
+     * @return true if the iterators point to the same element, false otherwise
+     */
     template<typename T>
     bool MyContainer<T>::Iterator::operator==(const Iterator &other) const {
+        return (this->start == other.start) && (this->current == other.current) && (this->end == other.end);
     }
 
+    /**
+     * Operator to check if two iterators are not equal. reuse the == operator. with flase
+     * @param other Iterator to compare with
+     * @return true if the iterators do not point to the same element, false otherwise
+     */
     template<typename T>
     bool MyContainer<T>::Iterator::operator!=(const Iterator &other) const {
+        return !(*this == other);
     }
 
     template<typename T>
