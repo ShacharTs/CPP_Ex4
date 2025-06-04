@@ -58,8 +58,6 @@ namespace MyContainerNamespace {
         // check if an element is inside the container
         bool contains(const T &element) const;
 
-        //T *createSortedCopyAscending() const;
-
         // friend function to print the container
         friend ostream &operator<<(ostream &os, const MyContainer<T> &container) {
             os << "[";
@@ -181,8 +179,8 @@ namespace MyContainerNamespace {
     template<typename T>
     T *MyContainer<T>::createSortedCopyAscending() const {
         T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size);
+        copy(elements, elements + _size, sorted);
+        sort(sorted, sorted + _size);
         return sorted;
     }
 
@@ -349,8 +347,8 @@ namespace MyContainerNamespace {
     template<typename T>
     T *MyContainer<T>::createSortedCopyDescending() const {
         T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size, std::greater<T>());
+        copy(elements, elements + _size, sorted);
+        sort(sorted, sorted + _size, greater<T>());
         return sorted;
     }
 
@@ -374,8 +372,8 @@ namespace MyContainerNamespace {
     template<typename T>
     T *MyContainer<T>::createSideCrossCopy() const {
         T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size);
+        copy(elements, elements + _size, sorted);
+        sort(sorted, sorted + _size);
 
         T *result = new T[_size];
         size_t left = 0, right = _size - 1, idx = 0;
