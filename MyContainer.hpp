@@ -140,7 +140,13 @@ namespace MyContainer {
      */
     template<typename T>
     MyContainer<T>::MyContainer(const MyContainer<T> &other) {
-
+        this->_size = other._size;
+        this->capacity = other.capacity;
+        this->elements = new T[other.capacity];
+        // Copy elements from the other container
+        for (size_t i = 0; i < other._size; ++i) {
+            this->elements[i] = other.elements[i];
+        }
     }
 
     /**
@@ -150,6 +156,18 @@ namespace MyContainer {
      */
     template<typename T>
     MyContainer<T> & MyContainer<T>::operator=(const MyContainer<T> &other) {
+        if (this != &other) {
+            delete[] this->elements; // free existing elements
+            // overwrite with other's elements
+            this->_size = other._size;
+            this->capacity = other.capacity;
+            this->elements = new T[other.capacity];
+            // Copy elements from the other container
+            for (size_t i = 0; i < other._size; ++i) {
+                this->elements[i] = other.elements[i];
+            }
+        }
+        return *this;
     }
 
     /**
