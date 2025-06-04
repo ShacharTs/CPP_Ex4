@@ -90,8 +90,12 @@ namespace MyContainer {
             // assignment operator
             Iterator &operator=(const Iterator &other);
 
+            // operator to access the element by pointer
+            T *operator->() const;
+
             // operator to access the element
             T &operator*() const;
+
 
             // operator to check if two iterators are equal
             bool operator==(const Iterator &other) const;
@@ -101,6 +105,8 @@ namespace MyContainer {
 
             // operator to access the element by index
             T &operator[](size_t index) const;
+
+
         };
 
     public:
@@ -378,12 +384,40 @@ namespace MyContainer {
         return tmp;
     }
 
+    /**
+     * Copy assignment operator for the iterator.
+     * @param other Iterator to copy from
+     * @return a reference to this iterator
+     */
     template<typename T>
     typename MyContainer<T>::Iterator &MyContainer<T>::Iterator::operator=(const Iterator &other) {
+        if (this != &other) {
+            this->start = other.start;
+            this->current = other.current;
+            this->end = other.end;
+        }
+        return *this;
     }
 
+    /**
+     * Pointer operator to access the current element.
+     * @return a pointer to the current element
+     */
+    template<typename T>
+    T * MyContainer<T>::Iterator::operator->() const {
+        return current;
+    }
+
+    /**
+     * Deference operator the iterator to access the current element.
+     * @return
+     */
     template<typename T>
     T &MyContainer<T>::Iterator::operator*() const {
+        if (current == nullptr) {
+            throw OutOfRange("Cannot dereference end or null iterator.");
+        }
+        return *current;
     }
 
     template<typename T>
