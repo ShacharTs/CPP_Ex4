@@ -42,7 +42,7 @@ namespace MyContainer {
         // check if the container is empty
         bool isEmpty() const;
 
-        // check if a element is inside the container
+        // check if an element is inside the container
         bool contains(const T &element) const;
 
         // friend function to print the container
@@ -263,7 +263,7 @@ namespace MyContainer {
      */
     template<typename T>
     T &MyContainer<T>::at(const size_t index) {
-        // Check if index is within bounds
+        // Check if the index is within bounds
         if (index > _size - 1 ) {
             throw OutOfRange("Index out of range.");
         }
@@ -440,8 +440,18 @@ namespace MyContainer {
         return !(*this == other);
     }
 
+    /**
+     * Operator to access the element at a specific index.
+     * @param index the index of the element to access
+     * @return a reference to the element at the specified index
+     */
     template<typename T>
     T &MyContainer<T>::Iterator::operator[](size_t index) const {
+        const size_t range = static_cast<size_t>(end - start);
+        if (index >= range) {
+            throw OutOfRange("Index out of range.");
+        }
+        return *(start + index);
     }
 
     template<typename T>
