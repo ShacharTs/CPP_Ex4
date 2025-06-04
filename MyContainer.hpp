@@ -322,6 +322,10 @@ namespace MyContainer {
         this->end = other.end;
     }
 
+    /**
+     * Operator to increment the iterator to the next element.
+     * @return a reference to the incremented iterator
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator++() {
     }
@@ -360,10 +364,12 @@ namespace MyContainer {
 
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::begin() {
+        return Iterator(&elements[0], &elements[_size]);
     }
 
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::end() {
+        return Iterator(&elements[_size], &elements[_size]);
     }
 
     template<typename T>
