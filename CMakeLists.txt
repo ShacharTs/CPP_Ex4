@@ -7,4 +7,5 @@ add_executable(CPP_Ex4
         container/MyContainer.hpp
         container/MyContainerExceptions.hpp
         Demo.cpp
+        tests/intTest.cpp
 )
