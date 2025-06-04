@@ -576,7 +576,10 @@ namespace MyContainerNamespace {
         return Iterator(&elements[_size], &elements[_size]);
     }
 
-
+    /**
+     *
+     * @return  an iterator to the beginning of the container in ascending order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginAscendingOrder() {
         if (ascendingCopy) delete[] ascendingCopy;
@@ -584,11 +587,19 @@ namespace MyContainerNamespace {
         return Iterator(ascendingCopy, ascendingCopy, ascendingCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the end of the container in ascending order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endAscendingOrder() {
         return Iterator(ascendingCopy, ascendingCopy + _size, ascendingCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the beginning of the container in descending order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginDescendingOrder() {
         if (descendingCopy) delete[] descendingCopy;
@@ -596,11 +607,19 @@ namespace MyContainerNamespace {
         return Iterator(descendingCopy, descendingCopy, descendingCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the end of the container in descending order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endDescendingOrder() {
         return Iterator(descendingCopy, descendingCopy + _size, descendingCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the beginning of the container in reverse order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginReverseOrder() {
         if (reverseCopy) delete[] reverseCopy;
@@ -608,23 +627,37 @@ namespace MyContainerNamespace {
         return Iterator(reverseCopy, reverseCopy, reverseCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the end of the container in reverse order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endReverseOrder() {
         return Iterator(reverseCopy, reverseCopy + _size, reverseCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the beginning of the container in order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginOrder() {
         return Iterator(elements, elements, elements + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the end of the container in order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endOrder() {
         return Iterator(elements, elements + _size, elements + _size);
     }
 
-
-
+    /**
+     *
+     * @return  an iterator to the beginning of the container in side cross order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
         if (sideCrossCopy) delete[] sideCrossCopy;
@@ -632,11 +665,19 @@ namespace MyContainerNamespace {
         return Iterator(sideCrossCopy, sideCrossCopy, sideCrossCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the end of the container in side cross order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
         return Iterator(sideCrossCopy, sideCrossCopy + _size, sideCrossCopy + _size);
     }
 
+    /**
+     *
+     * @return  an iterator to the beginning of the container in middle out order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginMiddleOutOrder() {
         if (middleOutCopy) delete[] middleOutCopy;
@@ -644,8 +685,13 @@ namespace MyContainerNamespace {
         return Iterator(middleOutCopy, middleOutCopy, middleOutCopy + _size);
     }
 
+    /**
+     *
+     * @return an iterator to the end of the container in middle out order
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endMiddleOutOrder() {
         return Iterator(middleOutCopy, middleOutCopy + _size, middleOutCopy + _size);
     }
+
 }
