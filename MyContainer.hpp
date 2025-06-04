@@ -47,6 +47,15 @@ namespace MyContainer {
 
         // friend function to print the container
         friend ostream &operator<<(ostream &os, const MyContainer<T> &container) {
+            os << "[";
+            for (size_t i = 0; i < container._size; ++i) {
+                os << container.elements[i];
+                if (i < container._size - 1) {
+                    os << ", ";
+                }
+            }
+            os << "]";
+            return os;
         }
 
         /**
