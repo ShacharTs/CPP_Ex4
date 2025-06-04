@@ -342,6 +342,10 @@ namespace MyContainerNamespace {
         return false;
     }
 
+    /**
+     * Private method to create a sorted copy of the container in ascending order.
+     * @return a pointer to a new array containing the sorted elements
+     */
     template<typename T>
     T *MyContainer<T>::createSortedCopyDescending() const {
         T *sorted = new T[_size];
@@ -350,7 +354,10 @@ namespace MyContainerNamespace {
         return sorted;
     }
 
-    // Same for other methods:
+    /**
+     * Private method to create a reverse copy of the container.
+     * @return a pointer to a new array containing the elements in reverse order
+     */
     template<typename T>
     T *MyContainer<T>::createReverseCopy() const {
         T *reversed = new T[_size];
@@ -360,6 +367,10 @@ namespace MyContainerNamespace {
         return reversed;
     }
 
+    /**
+     * Private method to create a side cross copy of the container.
+     * @return  a pointer to a new array containing the elements inside cross-order
+     */
     template<typename T>
     T *MyContainer<T>::createSideCrossCopy() const {
         T *sorted = new T[_size];
@@ -376,7 +387,10 @@ namespace MyContainerNamespace {
         delete[] sorted;
         return result;
     }
-
+    /**
+     * Private method to create a middle out copy of the container.
+     * @return a pointer to a new array containing the elements in middle out order
+     */
     template<typename T>
     T *MyContainer<T>::createMiddleOutCopy() const {
         T *result = new T[_size];
@@ -664,7 +678,7 @@ namespace MyContainerNamespace {
 
     /**
      *
-     * @return  an iterator to the end of the container in side cross-order
+     * @return  an iterator to the end of the container inside cross-order
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
