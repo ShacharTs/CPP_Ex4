@@ -454,16 +454,26 @@ namespace MyContainer {
         return *(start + index);
     }
 
+    /**
+     * @return an iterator to the beginning of the container.
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::begin() {
         return Iterator(&elements[0], &elements[_size]);
     }
 
+    /**
+     * @return an iterator to the end of the container.
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::end() {
         return Iterator(&elements[_size], &elements[_size]);
     }
 
+    /**
+     *
+     * @return
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::AscendingOrder() {
     }
