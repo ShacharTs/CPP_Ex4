@@ -14,5 +14,5 @@ public:
 
 class ContainerEmpty : public std::out_of_range {
 public:
-    explicit ContainerEmpty(const std::string& msg) : std::runtime_error (msg) {}
+    explicit ContainerEmpty(const std::string& msg) : std::out_of_range (msg) {}
 };

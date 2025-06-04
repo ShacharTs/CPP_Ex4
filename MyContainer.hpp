@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace MyContainer {
+namespace MyContainerNamespace {
     template<typename T>
     class MyContainer {
     private:
@@ -114,17 +114,23 @@ namespace MyContainer {
 
         Iterator end();
 
-        Iterator AscendingOrder();
+        Iterator beginAscendingOrder();
+        Iterator endAscendingOrder();
 
-        Iterator DescendingOrder();
+        Iterator beginDescendingOrder();
+        Iterator endDescendingOrder();
 
-        Iterator SideCrossOrder();
+        Iterator beginSideCrossOrder();
+        Iterator endSideCrossOrder();
 
-        Iterator ReverseOrder();
+        Iterator beginReverseOrder();
+        Iterator endReverseOrder();
 
-        Iterator Order();
+        Iterator beginOrder();
+        Iterator endOrder();
 
-        Iterator MiddleOutOrder();
+        Iterator beginMiddleOutOrder();
+        Iterator endMiddleOutOrder();
     };
 
     /**
@@ -471,33 +477,7 @@ namespace MyContainer {
         return Iterator(&elements[_size], &elements[_size]);
     }
 
-    /**
-     *
-     * @return
-     */
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::AscendingOrder() {
-    }
 
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::DescendingOrder() {
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::SideCrossOrder() {
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::ReverseOrder() {
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::Order() {
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::MiddleOutOrder() {
-    }
 
 
 }
