@@ -11,14 +11,12 @@ namespace MyContainerNamespace {
     class MyContainer {
     private:
         T *elements; // pointer to the array of elements
-        size_t capacity;
-        size_t _size;
-        T* orderedCopy = nullptr;
+        size_t capacity; // current capacity of the container
+        size_t _size; // current size of the container
 
+        T* orderedCopy = nullptr; // Temporary buffer used to hold a dynamically generated view of the container
 
-
-
-        void resize(size_t new_capacity);
+        void resize(size_t new_capacity); // Change the capacity of the container
 
         T *createSortedCopyAscending() const;
 
