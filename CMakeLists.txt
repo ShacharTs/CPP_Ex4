@@ -4,7 +4,7 @@ project(CPP_Ex4)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(CPP_Ex4
-        MyContainer.hpp
-        Exceptions.hpp
+        container/MyContainer.hpp
+        container/MyContainerExceptions.hpp
         Demo.cpp
 )
