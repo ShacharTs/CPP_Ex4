@@ -13,12 +13,9 @@ namespace MyContainerNamespace {
         T *elements; // pointer to the array of elements
         size_t capacity;
         size_t _size;
-        T *ascendingCopy = nullptr;
-        T *descendingCopy = nullptr;
-        T *reverseCopy = nullptr;
-        T *sideCrossCopy = nullptr;
-        T *middleOutCopy = nullptr;
-        T *order = nullptr;
+        T* orderedCopy = nullptr;
+
+
 
 
         void resize(size_t new_capacity);
@@ -204,12 +201,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     MyContainer<T>::~MyContainer() {
-        delete[] descendingCopy;
-        delete[] reverseCopy;
-        delete[] sideCrossCopy;
-        delete[] middleOutCopy;
-        delete[] ascendingCopy;
-        delete[] order;
+        delete orderedCopy;
         delete[] elements;
     }
 
@@ -582,11 +574,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginAscendingOrder() {
-        if (ascendingCopy) {
-            delete[] ascendingCopy;
+        if (orderedCopy) {
+            delete[] orderedCopy;
         }
-        ascendingCopy = createSortedCopyAscending();
-        return Iterator(ascendingCopy, ascendingCopy, ascendingCopy + _size);
+        orderedCopy = createSortedCopyAscending();
+        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -595,7 +587,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endAscendingOrder() {
-        return Iterator(ascendingCopy, ascendingCopy + _size, ascendingCopy + _size);
+        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -604,11 +596,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginDescendingOrder() {
-        if (descendingCopy) {
-            delete[] descendingCopy;
+        if (orderedCopy) {
+            delete[] orderedCopy;
         }
-        descendingCopy = createSortedCopyDescending();
-        return Iterator(descendingCopy, descendingCopy, descendingCopy + _size);
+        orderedCopy = createSortedCopyDescending();
+        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -617,7 +609,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endDescendingOrder() {
-        return Iterator(descendingCopy, descendingCopy + _size, descendingCopy + _size);
+        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -626,11 +618,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginReverseOrder() {
-        if (reverseCopy) {
-            delete[] reverseCopy;
+        if (orderedCopy) {
+            delete[] orderedCopy;
         }
-        reverseCopy = createReverseCopy();
-        return Iterator(reverseCopy, reverseCopy, reverseCopy + _size);
+        orderedCopy = createReverseCopy();
+        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -639,7 +631,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endReverseOrder() {
-        return Iterator(reverseCopy, reverseCopy + _size, reverseCopy + _size);
+        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -666,11 +658,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
-        if (sideCrossCopy) {
-            delete[] sideCrossCopy;
+        if (orderedCopy) {
+            delete[] orderedCopy;
         }
-        sideCrossCopy = createSideCrossCopy();
-        return Iterator(sideCrossCopy, sideCrossCopy, sideCrossCopy + _size);
+        orderedCopy = createSideCrossCopy();
+        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -679,7 +671,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
-        return Iterator(sideCrossCopy, sideCrossCopy + _size, sideCrossCopy + _size);
+        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -688,11 +680,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginMiddleOutOrder() {
-        if (middleOutCopy) {
-            delete[] middleOutCopy;
+        if (orderedCopy) {
+            delete[] orderedCopy;
         }
-        middleOutCopy = createMiddleOutCopy();
-        return Iterator(middleOutCopy, middleOutCopy, middleOutCopy + _size);
+        orderedCopy = createMiddleOutCopy();
+        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -701,7 +693,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endMiddleOutOrder() {
-        return Iterator(middleOutCopy, middleOutCopy + _size, middleOutCopy + _size);
+        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
 }
