@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(CPP_Ex4 main.cpp
         MyContainer.hpp
         Exceptions.hpp
-        Demo.cpp)
+        Demo.cpp
+        OrderType.hpp)

@@ -2,79 +2,46 @@
 #include <iostream>
 #include "Exceptions.hpp"
 #include <algorithm>
+#include <vector>
 
+#include "OrderType.hpp"
 
 using namespace std;
 
-namespace MyContainerNamespace {
-    template<typename T>
+namespace MyContainerNamespace2{
+
+    template <typename T>
     class MyContainer {
     private:
-        T *elements; // pointer to the array of elements
-        size_t capacity;
-        size_t _size;
-        T *ascendingCopy = nullptr;
-        T *descendingCopy = nullptr;
-        T *reverseCopy = nullptr;
-        T *sideCrossCopy = nullptr;
-        T *middleOutCopy = nullptr;
-        T *order = nullptr;
-
-
-        void resize(size_t new_capacity);
-
-        T *createSortedCopyAscending() const;
-
-        T *createSortedCopyDescending() const;
-
-        T *createReverseCopy() const;
-
-        T *createSideCrossCopy() const;
-
-        T *createMiddleOutCopy() const;
+        std::vector<T> data;
 
     public:
-        // default constructor
-        MyContainer<T>();
+        MyContainer() = default;
 
-        // destructor
-        ~MyContainer<T>();
+        void add(const T& value) {
+            data.push_back(value);
+        }
 
-        // copy constructor
-        MyContainer<T>(const MyContainer<T> &other);
-
-        // copy assignment operator
-        MyContainer<T> &operator=(const MyContainer<T> &other);
-
-        // add element needs to add throw when full, if there are multi of the same val, add all of them
-        void add(const T &element);
-
-        // remove element, if not found, throw exception
-        void remove(const T &element);
-
-        T &at(size_t index);
-
-        // return the size of the container
-        size_t size() const;
-
-        // check if the container is empty
-        bool isEmpty() const;
-
-        // check if an element is inside the container
-        bool contains(const T &element) const;
-
-        //T *createSortedCopyAscending() const;
-
-        // friend function to print the container
-        friend ostream &operator<<(ostream &os, const MyContainer<T> &container) {
-            os << "[";
-            for (size_t i = 0; i < container._size; ++i) {
-                os << container.elements[i];
-                if (i < container._size - 1) {
-                    os << ", ";
-                }
+        void remove(const T& value) {
+            auto it = std::remove(data.begin(), data.end(), value);
+            if (it == data.end()) {
+                throw std::runtime_error("Element not found.");
             }
-            os << "]";
+            data.erase(it, data.end());
+        }
+
+        size_t size() const {
+            return data.size();
+        }
+
+        const std::vector<T>& getData() const {
+            return data;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const MyContainer<T>& container) {
+            for (const T& val : container.data) {
+                os << val << ' ';
+            }
             return os;
         }
 
@@ -85,15 +52,15 @@ namespace MyContainerNamespace {
          * in various orders.
          */
         class Iterator {
-        private:
-            T *start; // pointer to the start of the container
+            private:
+            T* start; // pointer to the start of the container
             T *current; // pointer to the current element
             T *end; // pointer to the end of the container
 
 
         public:
             // constructor and destructor
-            Iterator(T *start, T *current, T *end);
+            Iterator(T* start ,T* current, T* end);
 
             ~Iterator();
 
@@ -127,6 +94,8 @@ namespace MyContainerNamespace {
 
             // operator to access the element by index
             T &operator[](size_t index) const;
+
+
         };
 
     public:
@@ -135,27 +104,21 @@ namespace MyContainerNamespace {
         Iterator end();
 
         Iterator beginAscendingOrder();
-
         Iterator endAscendingOrder();
 
         Iterator beginDescendingOrder();
-
         Iterator endDescendingOrder();
 
         Iterator beginSideCrossOrder();
-
         Iterator endSideCrossOrder();
 
         Iterator beginReverseOrder();
-
         Iterator endReverseOrder();
 
         Iterator beginOrder();
-
         Iterator endOrder();
 
         Iterator beginMiddleOutOrder();
-
         Iterator endMiddleOutOrder();
     };
 
@@ -183,15 +146,6 @@ namespace MyContainerNamespace {
         }
     }
 
-    template<typename T>
-    T *MyContainer<T>::createSortedCopyAscending() const {
-        T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size);
-        return sorted;
-    }
-
-
     /**
      * Constructor for MyContainer
      */
@@ -204,12 +158,6 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     MyContainer<T>::~MyContainer() {
-        delete[] descendingCopy;
-        delete[] reverseCopy;
-        delete[] sideCrossCopy;
-        delete[] middleOutCopy;
-        delete[] ascendingCopy;
-        delete[] order;
         delete[] elements;
     }
 
@@ -311,7 +259,7 @@ namespace MyContainerNamespace {
     template<typename T>
     T &MyContainer<T>::at(const size_t index) {
         // Check if the index is within bounds
-        if (index > _size - 1) {
+        if (index > _size - 1 ) {
             throw OutOfRange("Index out of range.");
         }
         if (_size == 0) {
@@ -352,59 +300,6 @@ namespace MyContainerNamespace {
         return false;
     }
 
-    template<typename T>
-    T *MyContainer<T>::createSortedCopyDescending() const {
-        T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size, std::greater<T>());
-        return sorted;
-    }
-
-    // Same for other methods:
-    template<typename T>
-    T *MyContainer<T>::createReverseCopy() const {
-        T *reversed = new T[_size];
-        for (size_t i = 0; i < _size; ++i) {
-            reversed[i] = elements[_size - 1 - i];
-        }
-        return reversed;
-    }
-
-    template<typename T>
-    T *MyContainer<T>::createSideCrossCopy() const {
-        T *sorted = new T[_size];
-        std::copy(elements, elements + _size, sorted);
-        std::sort(sorted, sorted + _size);
-
-        T *result = new T[_size];
-        size_t left = 0, right = _size - 1, idx = 0;
-        while (left <= right) {
-            result[idx++] = sorted[left++];
-            if (left <= right) result[idx++] = sorted[right--];
-        }
-
-        delete[] sorted;
-        return result;
-    }
-
-    template<typename T>
-    T *MyContainer<T>::createMiddleOutCopy() const {
-        T *result = new T[_size];
-        size_t mid = _size / 2;
-        result[0] = elements[mid];
-
-        size_t left = mid;
-        size_t right = mid + 1;
-        size_t idx = 1;
-
-        while (left > 0 || right < _size) {
-            if (right < _size) result[idx++] = elements[right++];
-            if (left > 0) result[idx++] = elements[--left];
-        }
-
-        return result;
-    }
-
 
     /**
      * Constructor for Iterator
@@ -413,8 +308,7 @@ namespace MyContainerNamespace {
      * @param end Last element in the container (one past the last valid element)
      */
     template<typename T>
-    MyContainer<T>::Iterator::Iterator(T *start, T *current, T *end) : start(start), current(current), end(end) {
-    }
+    MyContainer<T>::Iterator::Iterator(T* start, T* current, T* end) : start(start),current(current), end(end) {}
 
     /**
      * Destructor for Iterator, only a pointer is deleted, no need to delete the elements
@@ -440,12 +334,11 @@ namespace MyContainerNamespace {
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator++() {
         if (current == end) {
-            throw OutOfRange("Iterator out of range!!.");
+            throw OutOfRange("Iterator out of range.");
         }
-        ++current;
+        current++;
         return *this;
     }
-
 
     /**
      * Operator to decrement the iterator to the previous element.
@@ -508,7 +401,7 @@ namespace MyContainerNamespace {
      * @return a pointer to the current element
      */
     template<typename T>
-    T *MyContainer<T>::Iterator::operator->() const {
+    T * MyContainer<T>::Iterator::operator->() const {
         return current;
     }
 
@@ -518,13 +411,11 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     T &MyContainer<T>::Iterator::operator*() const {
-        if (current == nullptr || current == end) {
+        if (current == nullptr) {
             throw OutOfRange("Cannot dereference end or null iterator.");
         }
-        //cout << "Dereferencing: " << current << endl;
         return *current;
     }
-
 
     /**
      * Operator to check if two iterators are equal.
@@ -533,7 +424,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     bool MyContainer<T>::Iterator::operator==(const Iterator &other) const {
-        return current == other.current;
+        return (this->start == other.start) && (this->current == other.current) && (this->end == other.end);
     }
 
     /**
@@ -577,75 +468,61 @@ namespace MyContainerNamespace {
     }
 
 
+
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginAscendingOrder() {
-        if (ascendingCopy) delete[] ascendingCopy;
-        ascendingCopy = createSortedCopyAscending();
-        return Iterator(ascendingCopy, ascendingCopy, ascendingCopy + _size);
+        T* sorted = createSortedCopyAscending();
+        return Iterator(sorted, sorted, sorted + _size);
     }
 
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endAscendingOrder() {
-        return Iterator(ascendingCopy, ascendingCopy + _size, ascendingCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::beginDescendingOrder() {
-        if (descendingCopy) delete[] descendingCopy;
-        descendingCopy = createSortedCopyDescending();
-        return Iterator(descendingCopy, descendingCopy, descendingCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::endDescendingOrder() {
-        return Iterator(descendingCopy, descendingCopy + _size, descendingCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::beginReverseOrder() {
-        if (reverseCopy) delete[] reverseCopy;
-        reverseCopy = createReverseCopy();
-        return Iterator(reverseCopy, reverseCopy, reverseCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::endReverseOrder() {
-        return Iterator(reverseCopy, reverseCopy + _size, reverseCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::beginOrder() {
-        return Iterator(elements, elements, elements + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::endOrder() {
-        return Iterator(elements, elements + _size, elements + _size);
+        T* sorted = createSortedCopyAscending();
+        return Iterator(sorted, sorted + _size, sorted + _size);
     }
 
 
 
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
-        if (sideCrossCopy) delete[] sideCrossCopy;
-        sideCrossCopy = createSideCrossCopy();
-        return Iterator(sideCrossCopy, sideCrossCopy, sideCrossCopy + _size);
-    }
 
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
-        return Iterator(sideCrossCopy, sideCrossCopy + _size, sideCrossCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::beginMiddleOutOrder() {
-        if (middleOutCopy) delete[] middleOutCopy;
-        middleOutCopy = createMiddleOutCopy();
-        return Iterator(middleOutCopy, middleOutCopy, middleOutCopy + _size);
-    }
-
-    template<typename T>
-    typename MyContainer<T>::Iterator MyContainer<T>::endMiddleOutOrder() {
-        return Iterator(middleOutCopy, middleOutCopy + _size, middleOutCopy + _size);
-    }
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::beginDescendingOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::endDescendingOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::beginReverseOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::endReverseOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::beginOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::endOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::beginMiddleOutOrder() {
+    // }
+    //
+    // template<typename T>
+    // typename MyContainer<T>::Iterator MyContainer<T>::endMiddleOutOrder() {
+    // }
 }
+
+
