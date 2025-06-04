@@ -176,6 +176,13 @@ namespace MyContainer {
      */
     template<typename T>
     void MyContainer<T>::add(const T &element) {
+        if (_size == capacity) {
+            // If the container is full, resize it to double the current \n
+            // capacity, faster runtime when adding elements
+            size_t new_capacity = (capacity == 0) ? 1 : capacity * 2;
+            resize(new_capacity);
+        }
+        this->elements[this->_size++] = element;
     }
 
     /**
@@ -185,8 +192,36 @@ namespace MyContainer {
      * @param element the element to remove
      */
     template<typename T>
-    void MyContainer<T>::remove(const T &element) {
+void MyContainer<T>::remove(const T& element) {
+        size_t new_size = 0;
+        bool found = false;
+
+        for (size_t i = 0; i < _size; ++i) {
+            if (elements[i] != element) {
+                elements[new_size++] = elements[i];  // Keep the element
+            } else {
+                found = true;  // Element found at least once
+            }
+        }
+
+        if (!found) {
+            throw std::runtime_error("Element not found in the container.");
+        }
+
+        _size = new_size;
+
+        // Shrink if too much unused space
+        if (_size < capacity / 4 && capacity > 1) {
+            resize(capacity / 2);
+        }
+        // If the size is zero, free the memory and reset capacity
+        if (_size == 0) {
+            delete[] elements;
+            elements = nullptr;
+            capacity = 0;
+        }
     }
+
 
     /**
      * Provides access to the element at the specified index.
