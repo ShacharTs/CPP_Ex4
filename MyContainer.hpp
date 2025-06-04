@@ -66,11 +66,12 @@ namespace MyContainer {
          */
         class Iterator {
             private:
+            T* start; // pointer to the start of the container
             T *current; // pointer to the current element
             T *end; // pointer to the end of the container
         public:
             // constructor and destructor
-            Iterator(T* current, T* end);
+            Iterator(T* start ,T* current, T* end);
 
             ~Iterator();
 
@@ -304,7 +305,7 @@ namespace MyContainer {
      * @param end Last element in the container (one past the last valid element)
      */
     template<typename T>
-    MyContainer<T>::Iterator::Iterator(T* current, T* end) : current(current), end(end) {}
+    MyContainer<T>::Iterator::Iterator(T* start,T* current, T* end) : start(start),current(current), end(end) {}
 
     /**
      * Destructor for Iterator, only pointer is deleted, no need to delete the elements
@@ -318,6 +319,7 @@ namespace MyContainer {
      */
     template<typename T>
     MyContainer<T>::Iterator::Iterator(const Iterator &other) {
+        this->start = other.start;
         this->current = other.current;
         this->end = other.end;
     }
@@ -328,18 +330,52 @@ namespace MyContainer {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator++() {
+        if (current == end) {
+            throw OutOfRange("Iterator out of range.");
+        }
+        current++;
+        return *this;
     }
 
+    /**
+     * Operator to decrement the iterator to the previous element.
+     * @return a reference to the decremented iterator
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator--() {
+        if (start == current) {
+            throw OutOfRange("Cannot decrement before the start of the container.");
+        }
+        --current;
+        return *this;
     }
 
+    /**
+     * Postfix increment operator for the iterator (it++).
+     * @return A copy of the iterator before it was incremented.
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator++(int) {
+        if (current == end) {
+            throw OutOfRange("Iterator out of range.");
+        }
+        Iterator tmp = *this;
+        ++(*this);
+        return tmp;
     }
 
+    /**
+     * Postfix decrement operator for the iterator (it--).
+     * @return A copy of the iterator before it was decremented.
+     */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::Iterator::operator--(int) {
+        if (start == current) {
+            throw OutOfRange("Cannot decrement before the start of the container.");
+        }
+        Iterator tmp = *this;
+        --(*this);
+        return tmp;
     }
 
     template<typename T>
