@@ -257,7 +257,7 @@ namespace MyContainer {
         if (index > _size - 1 ) {
             throw OutOfRange("Index out of range.");
         }
-        if (elements == nullptr) {
+        if (_size == 0) {
             throw ContainerEmpty("Container is empty.");
         }
         return elements[index];
@@ -374,4 +374,8 @@ namespace MyContainer {
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::MiddleOutOrder() {
     }
+
+
 }
+
+
