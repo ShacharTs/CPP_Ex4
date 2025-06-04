@@ -12,7 +12,7 @@ public:
 };
 
 
-// class OutOfRange : public std::out_of_range {
-// public:
-//     explicit OutOfRange(const std::string& msg) : std::runtime_error (msg) {}
-// };
+class ContainerEmpty : public std::out_of_range {
+public:
+    explicit ContainerEmpty(const std::string& msg) : std::runtime_error (msg) {}
+};

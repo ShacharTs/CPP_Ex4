@@ -4,6 +4,7 @@
 #include "Exceptions.hpp"
 
 using namespace std;
+
 namespace MyContainer {
     template<typename T>
     class MyContainer {
@@ -11,6 +12,7 @@ namespace MyContainer {
         T *elements; // pointer to the array of elements
         size_t capacity;
         size_t _size;
+
         void resize(size_t new_capacity);
 
     public:
@@ -45,7 +47,6 @@ namespace MyContainer {
 
         // friend function to print the container
         friend ostream &operator<<(ostream &os, const MyContainer<T> &container) {
-
         }
 
         /**
@@ -58,22 +59,33 @@ namespace MyContainer {
         public:
             // constructor and destructor
             Iterator();
+
             ~Iterator();
+
             // copy constructor
             Iterator(const Iterator &other);
+
             // operators for assignment
             Iterator operator++();
+
             Iterator operator--();
+
             Iterator operator++(int);
+
             Iterator operator--(int);
+
             // assignment operator
             Iterator &operator=(const Iterator &other);
+
             // operator to access the element
             T &operator*() const;
+
             // operator to check if two iterators are equal
             bool operator==(const Iterator &other) const;
+
             // operator to check if two iterators are not equal
             bool operator!=(const Iterator &other) const;
+
             // operator to access the element by index
             T &operator[](size_t index) const;
         };
@@ -105,7 +117,7 @@ namespace MyContainer {
         if (capacity == new_capacity) {
             return; // No need to resize if the capacity is the same
         }
-        T* new_elements = new T[new_capacity];
+        T *new_elements = new T[new_capacity];
         if (elements != nullptr) {
             for (size_t i = 0; i < _size && i < new_capacity; ++i) {
                 new_elements[i] = elements[i];
@@ -156,7 +168,7 @@ namespace MyContainer {
      * @return reference to this container
      */
     template<typename T>
-    MyContainer<T> & MyContainer<T>::operator=(const MyContainer<T> &other) {
+    MyContainer<T> &MyContainer<T>::operator=(const MyContainer<T> &other) {
         if (this != &other) {
             delete[] this->elements; // free existing elements
             // overwrite with other's elements
@@ -193,15 +205,15 @@ namespace MyContainer {
      * @param element the element to remove
      */
     template<typename T>
-void MyContainer<T>::remove(const T& element) {
+    void MyContainer<T>::remove(const T &element) {
         size_t new_size = 0;
         bool found = false;
 
         for (size_t i = 0; i < _size; ++i) {
             if (elements[i] != element) {
-                elements[new_size++] = elements[i];  // Keep the element
+                elements[new_size++] = elements[i]; // Keep the element
             } else {
-                found = true;  // An element was found and will be removed
+                found = true; // An element was found and will be removed
             }
         }
 
@@ -231,7 +243,15 @@ void MyContainer<T>::remove(const T& element) {
      * @return a reference to the element at the specified index
      */
     template<typename T>
-    T& MyContainer<T>::at(size_t index) {
+    T &MyContainer<T>::at(const size_t index) {
+        // Check if index is within bounds
+        if (index > _size - 1 ) {
+            throw OutOfRange("Index out of range.");
+        }
+        if (elements == nullptr) {
+            throw ContainerEmpty("Container is empty.");
+        }
+        return elements[index];
     }
 
     /**
@@ -287,11 +307,11 @@ void MyContainer<T>::remove(const T& element) {
     }
 
     template<typename T>
-    typename MyContainer<T>::Iterator & MyContainer<T>::Iterator::operator=(const Iterator &other) {
+    typename MyContainer<T>::Iterator &MyContainer<T>::Iterator::operator=(const Iterator &other) {
     }
 
     template<typename T>
-    T & MyContainer<T>::Iterator::operator*() const {
+    T &MyContainer<T>::Iterator::operator*() const {
     }
 
     template<typename T>
@@ -303,7 +323,7 @@ void MyContainer<T>::remove(const T& element) {
     }
 
     template<typename T>
-    T& MyContainer<T>::Iterator::operator[](size_t index) const {
+    T &MyContainer<T>::Iterator::operator[](size_t index) const {
     }
 
     template<typename T>
@@ -337,6 +357,4 @@ void MyContainer<T>::remove(const T& element) {
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::MiddleOutOrder() {
     }
-
-
 }
