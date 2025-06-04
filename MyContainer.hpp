@@ -307,14 +307,15 @@ namespace MyContainer {
 
     /**
      * Constructor for Iterator
+     * @param start Pointer to the start of the container
      * @param current Pointer to the current element in the container
      * @param end Last element in the container (one past the last valid element)
      */
     template<typename T>
-    MyContainer<T>::Iterator::Iterator(T* start,T* current, T* end) : start(start),current(current), end(end) {}
+    MyContainer<T>::Iterator::Iterator(T* start, T* current, T* end) : start(start),current(current), end(end) {}
 
     /**
-     * Destructor for Iterator, only pointer is deleted, no need to delete the elements
+     * Destructor for Iterator, only a pointer is deleted, no need to delete the elements
      */
     template<typename T>
     MyContainer<T>::Iterator::~Iterator() = default;
@@ -431,7 +432,7 @@ namespace MyContainer {
     }
 
     /**
-     * Operator to check if two iterators are not equal. reuse the == operator. with flase
+     * Operator to check if two iterators are not equal. Reuse the == operator. With false
      * @param other Iterator to compare with
      * @return true if the iterators do not point to the same element, false otherwise
      */
