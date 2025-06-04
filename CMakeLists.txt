@@ -8,4 +8,9 @@ add_executable(CPP_Ex4
         container/MyContainerExceptions.hpp
         Demo.cpp
         tests/intTest.cpp
+        tests/doubleTest.cpp
+        tests/floatTest.cpp
+        tests/stringTest.cpp
+        tests/charTest.cpp
+        tests/ObjectTest.cpp
 )
