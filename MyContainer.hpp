@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <stdexcept>
+#include "Exceptions.hpp"
 
 using namespace std;
 namespace MyContainer {
@@ -179,7 +180,7 @@ namespace MyContainer {
         if (_size == capacity) {
             // If the container is full, resize it to double the current \n
             // capacity, faster runtime when adding elements
-            size_t new_capacity = (capacity == 0) ? 1 : capacity * 2;
+            const size_t new_capacity = (capacity == 0) ? 1 : capacity * 2;
             resize(new_capacity);
         }
         this->elements[this->_size++] = element;
@@ -200,12 +201,12 @@ void MyContainer<T>::remove(const T& element) {
             if (elements[i] != element) {
                 elements[new_size++] = elements[i];  // Keep the element
             } else {
-                found = true;  // Element found at least once
+                found = true;  // An element was found and will be removed
             }
         }
 
         if (!found) {
-            throw std::runtime_error("Element not found in the container.");
+            throw ElementNotFound("Element not found in the container.");
         }
 
         _size = new_size;
