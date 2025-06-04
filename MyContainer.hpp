@@ -582,7 +582,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginAscendingOrder() {
-        if (ascendingCopy) delete[] ascendingCopy;
+        if (ascendingCopy) {
+            delete[] ascendingCopy;
+        }
         ascendingCopy = createSortedCopyAscending();
         return Iterator(ascendingCopy, ascendingCopy, ascendingCopy + _size);
     }
@@ -602,7 +604,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginDescendingOrder() {
-        if (descendingCopy) delete[] descendingCopy;
+        if (descendingCopy) {
+            delete[] descendingCopy;
+        }
         descendingCopy = createSortedCopyDescending();
         return Iterator(descendingCopy, descendingCopy, descendingCopy + _size);
     }
@@ -622,7 +626,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginReverseOrder() {
-        if (reverseCopy) delete[] reverseCopy;
+        if (reverseCopy) {
+            delete[] reverseCopy;
+        }
         reverseCopy = createReverseCopy();
         return Iterator(reverseCopy, reverseCopy, reverseCopy + _size);
     }
@@ -660,7 +666,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
-        if (sideCrossCopy) delete[] sideCrossCopy;
+        if (sideCrossCopy) {
+            delete[] sideCrossCopy;
+        }
         sideCrossCopy = createSideCrossCopy();
         return Iterator(sideCrossCopy, sideCrossCopy, sideCrossCopy + _size);
     }
@@ -680,7 +688,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginMiddleOutOrder() {
-        if (middleOutCopy) delete[] middleOutCopy;
+        if (middleOutCopy) {
+            delete[] middleOutCopy;
+        }
         middleOutCopy = createMiddleOutCopy();
         return Iterator(middleOutCopy, middleOutCopy, middleOutCopy + _size);
     }
