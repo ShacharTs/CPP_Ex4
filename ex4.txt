@@ -1,0 +1,37 @@
+
+using namespace std;
+
+template <typename T>
+myContainer{
+private:
+	Vector<T> myList;	
+	
+public:
+	myContainer<T>();
+	~myContainer<T>();
+	myContainer<T>(const myContainer<T> &other);
+	
+	void add(); // add element
+	void remove(const T& element); // remove element need to add throw when empty, if there are multi of the same val, remove all of them
+	int size(); // size of the container
+	bool isEmpty();
+	bool contains(const T& element) const; // true if inside, false if not
+	
+	friend ostream& operator<<(ostream& os,const myContainer<T> container); // friend function for print
+	
+	class Iterator{
+		public:
+		
+		Iterator();
+		~Iterator();
+	
+	};
+	
+public:
+	Iterator begin();
+	Iterator end();
+	
+	
+	
+	};
+	
