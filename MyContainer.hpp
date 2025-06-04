@@ -278,6 +278,12 @@ namespace MyContainer {
      */
     template<typename T>
     bool MyContainer<T>::contains(const T &element) const {
+        for (size_t i = 0; i < this->_size; ++i) {
+            if (elements[i] == element) {
+                return true;
+            }
+        }
+        return false;
     }
 
     template<typename T>
