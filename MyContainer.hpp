@@ -511,7 +511,6 @@ namespace MyContainerNamespace {
         if (current == nullptr || current == end) {
             throw OutOfRange("Cannot dereference end or null iterator.");
         }
-        //cout << "Dereferencing: " << current << endl;
         return *current;
     }
 
@@ -652,7 +651,7 @@ namespace MyContainerNamespace {
 
     /**
      *
-     * @return  an iterator to the beginning of the container in side cross order
+     * @return  an iterator to the beginning of the container in side cross-order
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginSideCrossOrder() {
@@ -665,7 +664,7 @@ namespace MyContainerNamespace {
 
     /**
      *
-     * @return  an iterator to the end of the container in side cross order
+     * @return  an iterator to the end of the container in side cross-order
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
