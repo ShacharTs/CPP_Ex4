@@ -65,9 +65,12 @@ namespace MyContainer {
          * in various orders.
          */
         class Iterator {
+            private:
+            T *current; // pointer to the current element
+            T *end; // pointer to the end of the container
         public:
             // constructor and destructor
-            Iterator();
+            Iterator(T* current, T* end);
 
             ~Iterator();
 
@@ -295,16 +298,28 @@ namespace MyContainer {
         return false;
     }
 
+    /**
+     * Constructor for Iterator
+     * @param current Pointer to the current element in the container
+     * @param end Last element in the container (one past the last valid element)
+     */
     template<typename T>
-    MyContainer<T>::Iterator::Iterator() {
-    }
+    MyContainer<T>::Iterator::Iterator(T* current, T* end) : current(current), end(end) {}
 
+    /**
+     * Destructor for Iterator, only pointer is deleted, no need to delete the elements
+     */
     template<typename T>
-    MyContainer<T>::Iterator::~Iterator() {
-    }
+    MyContainer<T>::Iterator::~Iterator() = default;
 
+    /**
+     * Copy constructor for Iterator
+     * @param other Iterator to copy from, only the pointers are copied
+     */
     template<typename T>
     MyContainer<T>::Iterator::Iterator(const Iterator &other) {
+        this->current = other.current;
+        this->end = other.end;
     }
 
     template<typename T>
