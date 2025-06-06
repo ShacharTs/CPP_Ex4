@@ -566,7 +566,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::begin() {
-        return Iterator(&elements[0], &elements[_size]);
+        return Iterator(&elements[0], &elements[0], &elements[_size]);
     }
 
     /**
@@ -574,7 +574,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::end() {
-        return Iterator(&elements[_size], &elements[_size]);
+        return Iterator(&elements[0], &elements[_size], &elements[_size]);
     }
 
     /**

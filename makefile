@@ -1,31 +1,27 @@
-# Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -g -Icontainer
-
-# Executable name
 TARGET = demo
+TEST_DIR = tests
+TESTS = $(wildcard $(TEST_DIR)/*.cpp)
+TEST_BINS = $(TESTS:.cpp=)
 
-# Source files
-SRCS = Demo.cpp
-OBJS = $(SRCS:.cpp=.o)
-
-# Default target
 all: $(TARGET)
 
-# Build executable
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(TARGET): Demo.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
-# Compile .cpp to .o
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(TEST_DIR)/%: $(TEST_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
-# Run with Valgrind (detailed)
+test: $(TEST_BINS)
+	@for t in $(TEST_BINS); do \
+		valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$$t || exit 1; \
+	done
+
 valgrind: $(TARGET)
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./$(TARGET)
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
 
-# Clean build artifacts
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(TARGET) $(TEST_BINS)
 
-.PHONY: all clean valgrind
+.PHONY: all test clean valgrind
