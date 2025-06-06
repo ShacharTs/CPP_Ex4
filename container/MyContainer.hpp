@@ -197,7 +197,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     MyContainer<T>::~MyContainer() {
-        delete orderedCopy;
+        delete [] orderedCopy;
         delete[] elements;
     }
 
