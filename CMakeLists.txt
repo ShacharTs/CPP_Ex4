@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(CPP_Ex4
         container/MyContainer.hpp
         container/MyContainerExceptions.hpp
-        Demo.cpp
+        main.cpp
         tests/test.cpp
         tests/object/People.cpp
         tests/object/People.hpp

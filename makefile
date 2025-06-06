@@ -1,11 +1,11 @@
 CXX       := g++
 CXXFLAGS  := -std=c++17 -Wall -Wextra -g -Icontainer
 
-TARGET := demo
+TARGET := main
 
 all: $(TARGET)
 
-$(TARGET): Demo.cpp
+$(TARGET): main.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 
