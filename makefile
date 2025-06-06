@@ -1,27 +1,25 @@
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -g -Icontainer
-TARGET = demo
-TEST_DIR = tests
-TESTS = $(wildcard $(TEST_DIR)/*.cpp)
-TEST_BINS = $(TESTS:.cpp=)
+CXX       := g++
+CXXFLAGS  := -std=c++17 -Wall -Wextra -g -Icontainer
+
+TARGET := demo
 
 all: $(TARGET)
 
 $(TARGET): Demo.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-$(TEST_DIR)/%: $(TEST_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $<
 
-test: $(TEST_BINS)
-	@for t in $(TEST_BINS); do \
-		valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$$t || exit 1; \
-	done
+TEST_BIN := tests/test
 
-valgrind: $(TARGET)
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
+$(TEST_BIN): tests/test.cpp tests/People.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+
+test: $(TEST_BIN)
+	@valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TEST_BIN)
+
 
 clean:
-	rm -f $(TARGET) $(TEST_BINS)
+	rm -f $(TARGET) $(TEST_BIN)
 
-.PHONY: all test clean valgrind
+.PHONY: all test clean

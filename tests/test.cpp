@@ -1,7 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "../container/MyContainer.hpp"
+#include "People.hpp"
 #include <sstream>
+
+using namespace PeopleClass;
 
 using namespace MyContainerNamespace;
 
@@ -230,6 +233,478 @@ TEST_CASE("MyContainer<int>") {
     SUBCASE("Const correctness") {
         c.add(1);
         const MyContainer<int> &cc = c;
+        CHECK(cc.size() == 1);
+        CHECK_FALSE(cc.isEmpty());
+        CHECK(cc.contains(1));
+    }
+
+    // Iterator on empty container returns begin == end
+    SUBCASE("Iterator on empty container") {
+        CHECK(c.begin() == c.end());
+    }
+}
+
+ //////// UNSIGNED INT CONTAINER TESTS //////////
+TEST_CASE("MyContainer<unsigned int>") {
+    MyContainer<unsigned int> c;
+
+    SUBCASE("Default constructor") {
+        CHECK(c.size() == 0);
+        CHECK(c.isEmpty());
+    }
+
+    SUBCASE("Add with duplicates") {
+        c.add(1);
+        c.add(1);
+        c.add(2);
+        CHECK(c.size() == 3);
+    }
+
+    SUBCASE("Remove existing and non-existing") {
+        c.add(10);
+        c.add(20);
+        CHECK_NOTHROW(c.remove(10));
+        CHECK_THROWS_AS(c.remove(99), ElementNotFound);
+    }
+
+    SUBCASE("Access elements via at()") {
+        c.add(7);
+        CHECK(c.at(0) == 7);
+        CHECK_THROWS_AS(c.at(10), OutOfRange);
+    }
+
+    SUBCASE("Contains check") {
+        c.add(5);
+        CHECK(c.contains(5));
+        CHECK_FALSE(c.contains(100));
+    }
+
+    SUBCASE("Copy constructor and assignment") {
+        c.add(1);
+        c.add(2);
+        MyContainer<unsigned int> copy(c);
+        CHECK(copy.size() == 2);
+        CHECK(copy.contains(1));
+
+        MyContainer<unsigned int> assign;
+        assign = c;
+        CHECK(assign.size() == 2);
+        CHECK(assign.contains(2));
+    }
+
+    SUBCASE("Operator <<") {
+        c.add(4);
+        c.add(5);
+        std::ostringstream oss;
+        oss << c;
+        CHECK(oss.str() == "[4, 5]");
+    }
+
+    SUBCASE("Iterators: generic usage") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        int count = 0;
+        for (auto it = c.begin(); it != c.end(); ++it)
+            ++count;
+        CHECK(count == 3);
+    }
+
+    SUBCASE("All iterators produce expected order") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+        c.add(4);
+        c.add(5);
+
+        std::vector<int> expected;
+
+        SUBCASE("Order") {
+            expected = {1, 2, 3, 4, 5};
+            int i = 0;
+            for (auto it = c.beginOrder(); it != c.endOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Reverse") {
+            expected = {5, 4, 3, 2, 1};
+            int i = 0;
+            for (auto it = c.beginReverseOrder(); it != c.endReverseOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Ascending") {
+            expected = {1, 2, 3, 4, 5};
+            int i = 0;
+            for (auto it = c.beginAscendingOrder(); it != c.endAscendingOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Descending") {
+            expected = {5, 4, 3, 2, 1};
+            int i = 0;
+            for (auto it = c.beginDescendingOrder(); it != c.endDescendingOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("SideCross") {
+            expected = {1, 5, 2, 4, 3};
+            int i = 0;
+            for (auto it = c.beginSideCrossOrder(); it != c.endSideCrossOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("MiddleOut") {
+            expected = {3, 4, 2, 5, 1};
+            int i = 0;
+            for (auto it = c.beginMiddleOutOrder(); it != c.endMiddleOutOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+    }
+
+    SUBCASE("Iterator operations: ++, --, ==, !=, *") {
+        c.add(10);
+        c.add(20);
+        c.add(30);
+
+        auto it1 = c.beginOrder();
+        auto it2 = it1;
+        ++it2;
+        CHECK(it1 != it2);
+        CHECK(*it2 == 20);
+        --it2;
+        CHECK(it1 == it2);
+    }
+
+    SUBCASE("Iterator operator[] and ->") {
+        c.add(100);
+        c.add(200);
+        auto it = c.beginOrder();
+        CHECK(it[1] == 200);
+        CHECK(*it == 100);
+    }
+    // Remove all duplicates test
+    SUBCASE("Remove all duplicates") {
+        c.add(5);
+        c.add(5);
+        c.add(5);
+        CHECK(c.size() == 3);
+        c.remove(5);
+        CHECK(c.isEmpty());
+        CHECK_THROWS_AS(c.remove(5), ElementNotFound);
+    }
+
+    // Remove from empty container throws
+    SUBCASE("Remove from empty container") {
+        CHECK_THROWS_AS(c.remove(10), ElementNotFound);
+    }
+
+    // at() throws if container empty
+    SUBCASE("at() throws when container empty") {
+        CHECK_THROWS_AS(c.at(0), ContainerEmpty);
+    }
+
+    // at() throws for out-of-range index
+    SUBCASE("at() throws for out-of-range") {
+        c.add(1);
+        CHECK_THROWS_AS(c.at(5), OutOfRange);
+    }
+
+    // Iterator increment past end throws
+    SUBCASE("Iterator increment past end throws") {
+        c.add(1);
+        auto it = c.begin();
+        ++it; // now at the end
+        CHECK_THROWS_AS(++it, OutOfRange);
+    }
+
+    // Iterator decrement before begin throws
+    SUBCASE("Iterator decrement before begin throws") {
+        c.add(1);
+        auto it = c.begin();
+        CHECK_THROWS_AS(--it, OutOfRange);
+    }
+
+    // Dereferencing end iterator throws
+    SUBCASE("Iterator dereference end throws") {
+        c.add(1);
+        auto it = c.end();
+        CHECK_THROWS_AS(*it, OutOfRange);
+    }
+
+    // Self-assignment does not break container
+    SUBCASE("Self-assignment") {
+        c.add(10);
+        c.add(20);
+        c = c;
+        CHECK(c.size() == 2);
+        CHECK(c.contains(10));
+        CHECK(c.contains(20));
+    }
+
+    // Assign empty container to non-empty container
+    SUBCASE("Assign empty to non-empty") {
+        MyContainer<unsigned int> c2;
+        c.add(1);
+        c2 = c;
+        c = MyContainer<unsigned int>(); // assign empty
+        CHECK(c.isEmpty());
+    }
+
+    // Add and remove large number of elements to test resizing
+    SUBCASE("Large add and remove") {
+        const int large_size = 10000;
+        for (int i = 0; i < large_size; ++i) {
+            c.add(i);
+        }
+        CHECK(c.size() == large_size);
+        for (int i = 0; i < large_size; ++i) {
+            c.remove(i);
+        }
+        CHECK(c.isEmpty());
+    }
+
+    // Const correctness checks
+    SUBCASE("Const correctness") {
+        c.add(1);
+        const MyContainer<unsigned int> &cc = c;
+        CHECK(cc.size() == 1);
+        CHECK_FALSE(cc.isEmpty());
+        CHECK(cc.contains(1));
+    }
+
+    // Iterator on empty container returns begin == end
+    SUBCASE("Iterator on empty container") {
+        CHECK(c.begin() == c.end());
+    }
+}
+
+//////// SIZE_T CONTAINER TESTS //////////
+TEST_CASE("MyContainer<size_t>") {
+    MyContainer<size_t> c;
+
+    SUBCASE("Default constructor") {
+        CHECK(c.size() == 0);
+        CHECK(c.isEmpty());
+    }
+
+    SUBCASE("Add with duplicates") {
+        c.add(1);
+        c.add(1);
+        c.add(2);
+        CHECK(c.size() == 3);
+    }
+
+    SUBCASE("Remove existing and non-existing") {
+        c.add(10);
+        c.add(20);
+        CHECK_NOTHROW(c.remove(10));
+        CHECK_THROWS_AS(c.remove(99), ElementNotFound);
+    }
+
+    SUBCASE("Access elements via at()") {
+        c.add(7);
+        CHECK(c.at(0) == 7);
+        CHECK_THROWS_AS(c.at(10), OutOfRange);
+    }
+
+    SUBCASE("Contains check") {
+        c.add(5);
+        CHECK(c.contains(5));
+        CHECK_FALSE(c.contains(100));
+    }
+
+    SUBCASE("Copy constructor and assignment") {
+        c.add(1);
+        c.add(2);
+        MyContainer<size_t> copy(c);
+        CHECK(copy.size() == 2);
+        CHECK(copy.contains(1));
+
+        MyContainer<size_t> assign;
+        assign = c;
+        CHECK(assign.size() == 2);
+        CHECK(assign.contains(2));
+    }
+
+    SUBCASE("Operator <<") {
+        c.add(4);
+        c.add(5);
+        std::ostringstream oss;
+        oss << c;
+        CHECK(oss.str() == "[4, 5]");
+    }
+
+    SUBCASE("Iterators: generic usage") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        int count = 0;
+        for (auto it = c.begin(); it != c.end(); ++it)
+            ++count;
+        CHECK(count == 3);
+    }
+
+    SUBCASE("All iterators produce expected order") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+        c.add(4);
+        c.add(5);
+
+        std::vector<int> expected;
+
+        SUBCASE("Order") {
+            expected = {1, 2, 3, 4, 5};
+            int i = 0;
+            for (auto it = c.beginOrder(); it != c.endOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Reverse") {
+            expected = {5, 4, 3, 2, 1};
+            int i = 0;
+            for (auto it = c.beginReverseOrder(); it != c.endReverseOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Ascending") {
+            expected = {1, 2, 3, 4, 5};
+            int i = 0;
+            for (auto it = c.beginAscendingOrder(); it != c.endAscendingOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("Descending") {
+            expected = {5, 4, 3, 2, 1};
+            int i = 0;
+            for (auto it = c.beginDescendingOrder(); it != c.endDescendingOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("SideCross") {
+            expected = {1, 5, 2, 4, 3};
+            int i = 0;
+            for (auto it = c.beginSideCrossOrder(); it != c.endSideCrossOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+
+        SUBCASE("MiddleOut") {
+            expected = {3, 4, 2, 5, 1};
+            int i = 0;
+            for (auto it = c.beginMiddleOutOrder(); it != c.endMiddleOutOrder(); ++it)
+                CHECK(*it == expected[i++]);
+        }
+    }
+
+    SUBCASE("Iterator operations: ++, --, ==, !=, *") {
+        c.add(10);
+        c.add(20);
+        c.add(30);
+
+        auto it1 = c.beginOrder();
+        auto it2 = it1;
+        ++it2;
+        CHECK(it1 != it2);
+        CHECK(*it2 == 20);
+        --it2;
+        CHECK(it1 == it2);
+    }
+
+    SUBCASE("Iterator operator[] and ->") {
+        c.add(100);
+        c.add(200);
+        auto it = c.beginOrder();
+        CHECK(it[1] == 200);
+        CHECK(*it == 100);
+    }
+    // Remove all duplicates test
+    SUBCASE("Remove all duplicates") {
+        c.add(5);
+        c.add(5);
+        c.add(5);
+        CHECK(c.size() == 3);
+        c.remove(5);
+        CHECK(c.isEmpty());
+        CHECK_THROWS_AS(c.remove(5), ElementNotFound);
+    }
+
+    // Remove from empty container throws
+    SUBCASE("Remove from empty container") {
+        CHECK_THROWS_AS(c.remove(10), ElementNotFound);
+    }
+
+    // at() throws if container empty
+    SUBCASE("at() throws when container empty") {
+        CHECK_THROWS_AS(c.at(0), ContainerEmpty);
+    }
+
+    // at() throws for out-of-range index
+    SUBCASE("at() throws for out-of-range") {
+        c.add(1);
+        CHECK_THROWS_AS(c.at(5), OutOfRange);
+    }
+
+    // Iterator increment past end throws
+    SUBCASE("Iterator increment past end throws") {
+        c.add(1);
+        auto it = c.begin();
+        ++it; // now at the end
+        CHECK_THROWS_AS(++it, OutOfRange);
+    }
+
+    // Iterator decrement before begin throws
+    SUBCASE("Iterator decrement before begin throws") {
+        c.add(1);
+        auto it = c.begin();
+        CHECK_THROWS_AS(--it, OutOfRange);
+    }
+
+    // Dereferencing end iterator throws
+    SUBCASE("Iterator dereference end throws") {
+        c.add(1);
+        auto it = c.end();
+        CHECK_THROWS_AS(*it, OutOfRange);
+    }
+
+    // Self-assignment does not break container
+    SUBCASE("Self-assignment") {
+        c.add(10);
+        c.add(20);
+        c = c;
+        CHECK(c.size() == 2);
+        CHECK(c.contains(10));
+        CHECK(c.contains(20));
+    }
+
+    // Assign empty container to non-empty container
+    SUBCASE("Assign empty to non-empty") {
+        MyContainer<size_t> c2;
+        c.add(1);
+        c2 = c;
+        c = MyContainer<size_t>(); // assign empty
+        CHECK(c.isEmpty());
+    }
+
+    // Add and remove large number of elements to test resizing
+    SUBCASE("Large add and remove") {
+        const int large_size = 10000;
+        for (int i = 0; i < large_size; ++i) {
+            c.add(i);
+        }
+        CHECK(c.size() == large_size);
+        for (int i = 0; i < large_size; ++i) {
+            c.remove(i);
+        }
+        CHECK(c.isEmpty());
+    }
+
+    // Const correctness checks
+    SUBCASE("Const correctness") {
+        c.add(1);
+        const MyContainer<size_t> &cc = c;
         CHECK(cc.size() == 1);
         CHECK_FALSE(cc.isEmpty());
         CHECK(cc.contains(1));
@@ -857,7 +1332,7 @@ TEST_CASE("MyContainer<char>") {
     SUBCASE("Iterator increment past end throws") {
         c.add('c');
         auto it = c.begin();
-        ++it; // now at end
+        ++it; // now at the end
         CHECK_THROWS_AS(++it, OutOfRange);
     }
 
@@ -921,7 +1396,7 @@ TEST_CASE("MyContainer<char>") {
 
 
 //////// STRING CONTAINER TESTS //////////
-TEST_CASE("MyContainer<std::string>") {
+TEST_CASE("MyContainer<string>") {
     MyContainer<std::string> c;
 
     SUBCASE("Default constructor") {
@@ -1093,7 +1568,7 @@ TEST_CASE("MyContainer<std::string>") {
     SUBCASE("Iterator increment past end throws") {
         c.add("a");
         auto it = c.begin();
-        ++it; // now at end
+        ++it; // now at the end
         CHECK_THROWS_AS(++it, OutOfRange);
     }
 
@@ -1148,5 +1623,271 @@ TEST_CASE("MyContainer<std::string>") {
 
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
+    }
+}
+
+/// //////// PEOPLE CONTAINER TESTS //////////
+TEST_CASE("MyContainer<People>") {
+    //
+    // Original subtests you already had:
+    //
+    MyContainer<People> c;  // a fresh container for each SUBCASE
+
+    SUBCASE("Add & contains") {
+        People a("Alice", 30), b("Bob", 25);
+        c.add(a);
+        c.add(b);
+        CHECK(c.size() == 2);
+        CHECK(c.contains(People("Alice", 30)));
+        CHECK_FALSE(c.contains(People("Charlie", 40)));
+    }
+
+    SUBCASE("Remove & exceptions") {
+        c.add({ "X", 50 });
+        CHECK_NOTHROW(c.remove({ "X", 50 }));
+        // now empty:
+        CHECK_THROWS_AS(c.remove({ "X", 50 }), ElementNotFound);
+    }
+
+    SUBCASE("at() and OutOfRange") {
+        c.add({ "Solo", 99 });
+        CHECK(c.at(0).getName() == "Solo");
+        CHECK_THROWS_AS(c.at(1), OutOfRange);
+    }
+
+    SUBCASE("Iterator orders") {
+        c.add({ "A", 10 });
+        c.add({ "B", 20 });
+        c.add({ "C", 30 });
+        // insertion order = A,B,C
+        std::vector<People> ins = { { "A",10 },{ "B",20 },{ "C",30 } };
+        int idx = 0;
+        for (auto it = c.beginOrder(); it != c.endOrder(); ++it)
+            CHECK(*it == ins[idx++]);
+
+        // reverse = C,B,A
+        idx = 0;
+        std::vector<People> rev = { { "C",30 },{ "B",20 },{ "A",10 } };
+        for (auto it = c.beginReverseOrder(); it != c.endReverseOrder(); ++it)
+            CHECK(*it == rev[idx++]);
+
+        // ascending (by age→name): A(10), B(20), C(30)
+        idx = 0;
+        std::vector<People> asc = { { "A",10 },{ "B",20 },{ "C",30 } };
+        for (auto it = c.beginAscendingOrder(); it != c.endAscendingOrder(); ++it)
+            CHECK(*it == asc[idx++]);
+
+        // descending: C(30), B(20), A(10)
+        idx = 0;
+        std::vector<People> desc = { { "C",30 },{ "B",20 },{ "A",10 } };
+        for (auto it = c.beginDescendingOrder(); it != c.endDescendingOrder(); ++it)
+            CHECK(*it == desc[idx++]);
+    }
+
+    SUBCASE("Operator<< prints them") {
+        c.add({ "Dave", 45 });
+        c.add({ "Eve", 35 });
+        std::ostringstream oss;
+        oss << c;
+        // We only check substrings; exact formatting might include commas/spaces.
+        std::string out = oss.str();
+        CHECK(out.find("Name: Dave, Age: 45") != std::string::npos);
+        CHECK(out.find("Name: Eve, Age: 35")  != std::string::npos);
+    }
+
+
+    //
+    // Additional subtests as requested:
+    //
+
+    SUBCASE("People class: equality, inequality, and operator<") {
+        People p1("Ann", 20);
+        People p2("Ben", 20);
+        People p3("Ann", 25);
+
+        // same name and age => equal
+        CHECK(p1 == People("Ann", 20));
+        CHECK_FALSE(p1 != People("Ann", 20));
+
+
+        CHECK_FALSE(p1 < p2);
+        CHECK(p1 <= p2);
+        CHECK_FALSE(p2 < p1);
+        CHECK(p2 <= p1);
+
+
+        // different age => younger < older
+        CHECK(p2 < p3);
+        CHECK_FALSE(p3 < p2);
+
+        // inequality checks
+        CHECK(p1 != p2);
+        CHECK(p1 != p3);
+    }
+
+    SUBCASE("Copy‐and‐assignment semantics of MyContainer<People>") {
+        MyContainer<People> original;
+        original.add({ "Alex", 30 });
+
+        // Copy-construct
+        MyContainer<People> copyConstructed = original;
+        CHECK(copyConstructed.size() == 1);
+        CHECK(copyConstructed.contains({ "Alex", 30 }));
+
+        // Mutate the copy → original remains unchanged
+        copyConstructed.add({ "Blake", 40 });
+        CHECK(copyConstructed.size() == 2);
+        CHECK(original.size() == 1);
+
+        // Assignment operator
+        MyContainer<People> assigned;
+        assigned.add({ "Carl", 50 });
+        assigned = original;
+        CHECK(assigned.size() == 1);
+        CHECK(assigned.contains({ "Alex", 30 }));
+        // Mutate 'assigned' should not affect 'original'
+        assigned.remove({ "Alex", 30 });
+        CHECK(assigned.size() == 0);
+        CHECK(original.size() == 1);
+    }
+
+    SUBCASE("Empty‐container behavior") {
+        MyContainer<People> emptyContainer;
+        // size() should be 0
+        CHECK(emptyContainer.size() == 0);
+
+        // contains() on any People returns false
+        CHECK_FALSE(emptyContainer.contains({ "Nobody", 0 }));
+
+
+        CHECK_THROWS(emptyContainer.at(0));
+
+        // Instead of checking begin()==end(), verify that iterating visits zero elements:
+        {
+            int count = 0;
+            for (auto it = emptyContainer.beginOrder(); it != emptyContainer.endOrder(); ++it) {
+                ++count;
+            }
+            CHECK(count == 0);
+        }
+        {
+            int count = 0;
+            for (auto it = emptyContainer.beginAscendingOrder(); it != emptyContainer.endAscendingOrder(); ++it) {
+                ++count;
+            }
+            CHECK(count == 0);
+        }
+        {
+            int count = 0;
+            for (auto it = emptyContainer.beginReverseOrder(); it != emptyContainer.endReverseOrder(); ++it) {
+                ++count;
+            }
+            CHECK(count == 0);
+        }
+        {
+            int count = 0;
+            for (auto it = emptyContainer.beginDescendingOrder(); it != emptyContainer.endDescendingOrder(); ++it) {
+                ++count;
+            }
+            CHECK(count == 0);
+        }
+
+        // operator<< on an empty container should produce exactly "[]"
+        std::ostringstream oss;
+        oss << emptyContainer;
+        CHECK(oss.str() == "[]");
+    }
+
+
+    SUBCASE("Ascending‐order tie‐breaking: same age → insertion order") {
+        MyContainer<People> tieTest;
+        tieTest.add({ "Zoe", 25 });
+        tieTest.add({ "Amy", 25 });
+        tieTest.add({ "Mike", 20 });
+        tieTest.add({ "Ben", 25 });
+
+        // Expected ascending order:
+        //   1) Mike(20)
+        //   2) Zoe(25)   (because Zoe was added first among age=25)
+        //   3) Amy(25)
+        //   4) Ben(25)
+        std::vector<People> expected = {
+            { "Mike", 20 },
+            { "Zoe", 25 },
+            { "Amy", 25 },
+            { "Ben", 25 }
+        };
+
+        int idx = 0;
+        for (auto it = tieTest.beginAscendingOrder(); it != tieTest.endAscendingOrder(); ++it) {
+            CHECK(*it == expected[idx++]);
+        }
+        CHECK(idx == static_cast<int>(expected.size()));
+    }
+
+
+    SUBCASE("Removal shifts indices and at() changes") {
+        MyContainer<People> removeTest;
+        removeTest.add({ "A", 10 });
+        removeTest.add({ "B", 20 });
+        removeTest.add({ "C", 30 });
+        removeTest.add({ "D", 40 });
+
+        // initial insertion order: A, B, C, D
+        CHECK(removeTest.at(0).getName() == "A");
+        CHECK(removeTest.at(1).getName() == "B");
+        CHECK(removeTest.at(2).getName() == "C");
+        CHECK(removeTest.at(3).getName() == "D");
+
+        // remove middle element ("B")
+        CHECK_NOTHROW(removeTest.remove({ "B", 20 }));
+        // now order should be A, C, D
+        CHECK(removeTest.size() == 3);
+        CHECK(removeTest.at(0).getName() == "A");
+        CHECK(removeTest.at(1).getName() == "C");
+        CHECK(removeTest.at(2).getName() == "D");
+
+        // remove first element ("A")
+        CHECK_NOTHROW(removeTest.remove({ "A", 10 }));
+        // now order: C, D
+        CHECK(removeTest.size() == 2);
+        CHECK(removeTest.at(0).getName() == "C");
+        CHECK(removeTest.at(1).getName() == "D");
+
+        // Removing something that doesn’t exist now throws ElementNotFound
+        CHECK_THROWS_AS(removeTest.remove({ "B", 20 }), ElementNotFound);
+        CHECK_THROWS_AS(removeTest.remove({ "X", 99 }), ElementNotFound);
+
+        // at(2) should throw OutOfRange
+        CHECK_THROWS_AS(removeTest.at(2), OutOfRange);
+    }
+
+    SUBCASE("Operator<< prints multiple elements in insertion order") {
+        MyContainer<People> streamTest;
+        streamTest.add({ "Dave", 45 });
+        streamTest.add({ "Eve", 35 });
+        streamTest.add({ "Frank", 50 });
+
+        std::ostringstream oss;
+        oss << streamTest;
+        std::string out = oss.str();
+
+        // It must start with "[" and end with "]"
+        CHECK(!out.empty());
+        CHECK(out.front() == '[');
+        CHECK(out.back() == ']');
+
+        // Must contain each "Name: <X>, Age: <Y>" in insertion order
+        auto posDave  = out.find("Name: Dave, Age: 45");
+        auto posEve   = out.find("Name: Eve, Age: 35");
+        auto posFrank = out.find("Name: Frank, Age: 50");
+
+        CHECK(posDave  != std::string::npos);
+        CHECK(posEve   != std::string::npos);
+        CHECK(posFrank != std::string::npos);
+
+        // Dave must appear before Eve, and Eve before Frank
+        CHECK(posDave < posEve);
+        CHECK(posEve < posFrank);
     }
 }

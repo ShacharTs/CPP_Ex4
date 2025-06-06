@@ -8,4 +8,6 @@ add_executable(CPP_Ex4
         container/MyContainerExceptions.hpp
         Demo.cpp
         tests/test.cpp
+        tests/object/People.cpp
+        tests/object/People.hpp
 )
