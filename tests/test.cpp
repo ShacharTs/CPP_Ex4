@@ -242,6 +242,31 @@ TEST_CASE("MyContainer<int>") {
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
     }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add(4);
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove(3);
+            }
+        }, ActiveIterator);
+    }
+
 }
 
  //////// UNSIGNED INT CONTAINER TESTS //////////
@@ -477,6 +502,30 @@ TEST_CASE("MyContainer<unsigned int>") {
     // Iterator on empty container returns begin == end
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
+    }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add(4);
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove(3);
+            }
+        }, ActiveIterator);
     }
 }
 
@@ -714,6 +763,30 @@ TEST_CASE("MyContainer<size_t>") {
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
     }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add(4);
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove(3);
+            }
+        }, ActiveIterator);
+    }
 }
 
 //////// FLOAT CONTAINER TESTS //////////
@@ -939,6 +1012,30 @@ TEST_CASE("MyContainer<float>") {
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
     }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add(4);
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove(3);
+            }
+        }, ActiveIterator);
+    }
 }
 //////// DOUBLE CONTAINER TESTS //////////
 TEST_CASE("MyContainer<double>") {
@@ -1162,6 +1259,30 @@ TEST_CASE("MyContainer<double>") {
 
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
+    }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add(4);
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add(1);
+        c.add(2);
+        c.add(3);
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove(3);
+            }
+        }, ActiveIterator);
     }
 }
 
@@ -1391,6 +1512,30 @@ TEST_CASE("MyContainer<char>") {
 
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
+    }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add('a');
+        c.add('b');
+        c.add('c');
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add('d');
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add('a');
+        c.add('b');
+        c.add('c');
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove('c');
+            }
+        }, ActiveIterator);
     }
 }
 
@@ -1623,6 +1768,29 @@ TEST_CASE("MyContainer<string>") {
 
     SUBCASE("Iterator on empty container") {
         CHECK(c.begin() == c.end());
+    }
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        c.add("aa");
+        c.add("bb");
+        c.add("cc");
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.add("dd");
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        c.add("aa");
+        c.add("bb");
+        c.add("cc");
+
+        CHECK_THROWS_AS({
+            for (auto it = c.begin(); it != c.end(); ++it) {
+                c.remove("cc");
+            }
+        }, ActiveIterator);
     }
 }
 
@@ -1890,4 +2058,66 @@ TEST_CASE("MyContainer<People>") {
         CHECK(posDave < posEve);
         CHECK(posEve < posFrank);
     }
+
+    SUBCASE("Add during iteration throws ActiveIterator") {
+        MyContainer<People> objContainer;
+        objContainer.add({ "Alice", 30 });
+        objContainer.add({ "Bob", 40 });
+        objContainer.add({ "Charlie", 25 });
+
+        CHECK_THROWS_AS({
+            for (auto it = objContainer.begin(); it != objContainer.end(); ++it) {
+                objContainer.add({ "Diana", 35 });
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Remove during iteration throws ActiveIterator") {
+        MyContainer<People> objContainer;
+        objContainer.add({ "Alice", 30 });
+        objContainer.add({ "Bob", 40 });
+        objContainer.add({ "Charlie", 25 });
+
+        CHECK_THROWS_AS({
+            for (auto it = objContainer.begin(); it != objContainer.end(); ++it) {
+                objContainer.remove({ "Charlie", 25 });
+            }
+        }, ActiveIterator);
+    }
+
+    SUBCASE("Sorted with custom comparator (name ascending)") {
+        MyContainer<People> sortedTest;
+        sortedTest.add({"Zed", 55});
+        sortedTest.add({"Anna", 30});
+        sortedTest.add({"Mike", 40});
+
+        auto nameAsc = [](const People& a, const People& b) {
+            return a.getName() < b.getName();
+        };
+
+        std::vector<std::string> names;
+        for (auto it = sortedTest.beginSortedWith(nameAsc); it != sortedTest.endSortedWith(); ++it) {
+            names.push_back(it->getName());
+        }
+
+        CHECK(names == std::vector<std::string>{"Anna", "Mike", "Zed"});
+    }
+    SUBCASE("Sorted with custom comparator (age descending)") {
+        MyContainer<People> sortedTest;
+        sortedTest.add({"Zed", 55});
+        sortedTest.add({"Anna", 30});
+        sortedTest.add({"Mike", 40});
+
+        auto ageDesc = [](const People& a, const People& b) {
+            return a.getAge() > b.getAge();
+        };
+
+        std::vector<std::string> names;
+        for (auto it = sortedTest.beginSortedWith(ageDesc); it != sortedTest.endSortedWith(); ++it) {
+            names.push_back(it->getName());
+        }
+
+        CHECK(names == std::vector<std::string>{"Zed", "Mike", "Anna"});
+    }
+
 }

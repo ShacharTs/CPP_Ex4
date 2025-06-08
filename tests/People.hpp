@@ -21,7 +21,7 @@ namespace PeopleClass {
         bool operator<=(const People& other) const;
         bool operator>=(const People& other) const;
 
-        friend std::ostream& operator<<(std::ostream& os, const People& p) {
+        friend ostream& operator<<(ostream& os, const People& p) {
             os << "Name: " << p.name << ", Age: " << p.age;
             return os;
         }

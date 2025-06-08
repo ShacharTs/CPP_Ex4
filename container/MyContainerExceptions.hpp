@@ -16,3 +16,8 @@ class ContainerEmpty : public std::out_of_range {
 public:
     explicit ContainerEmpty(const std::string& msg) : std::out_of_range (msg) {}
 };
+
+class ActiveIterator : public std::runtime_error {
+public:
+    explicit ActiveIterator(const std::string& msg) : std::runtime_error(msg) {}
+};

@@ -14,7 +14,10 @@ namespace MyContainerNamespace {
         size_t capacity; // current capacity of the container
         size_t _size; // current size of the container
 
-        T* orderedCopy = nullptr; // Temporary buffer used to hold a dynamically generated view of the container
+        size_t activeIterators = 0;
+        friend class Iterator;
+
+        T *orderedCopy = nullptr; // Temporary buffer used to hold a dynamically generated view of the container
 
         void resize(size_t new_capacity); // Change the capacity of the container
 
@@ -27,6 +30,9 @@ namespace MyContainerNamespace {
         T *createSideCrossCopy() const;
 
         T *createMiddleOutCopy() const;
+
+        template<typename Comparator>
+        T *createSortedCopyWith(Comparator comp) const;
 
     public:
         // default constructor
@@ -83,12 +89,14 @@ namespace MyContainerNamespace {
             T *current; // pointer to the current element
             T *end; // pointer to the end of the container
 
+            MyContainer<T> *container;
 
         public:
             // constructor and destructor
-            Iterator(T *start, T *current, T *end);
+            Iterator(MyContainer<T> *container, T *start, T *current, T *end);
 
             ~Iterator();
+
 
             // copy constructor
             Iterator(const Iterator &other);
@@ -127,6 +135,8 @@ namespace MyContainerNamespace {
 
         Iterator end();
 
+        Iterator find(const T &val);
+
         Iterator beginAscendingOrder();
 
         Iterator endAscendingOrder();
@@ -150,6 +160,11 @@ namespace MyContainerNamespace {
         Iterator beginMiddleOutOrder();
 
         Iterator endMiddleOutOrder();
+
+        template<typename Comparator>
+        Iterator beginSortedWith(Comparator comp);
+
+        Iterator endSortedWith();
     };
 
     /**
@@ -175,8 +190,6 @@ namespace MyContainerNamespace {
             _size = new_capacity;
         }
     }
-
-
 
 
     /**
@@ -237,6 +250,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     void MyContainer<T>::add(const T &element) {
+        if (activeIterators > 0) {
+            throw ActiveIterator("Cannot modify container during iteration");
+        }
         if (_size == capacity) {
             // If the container is full, resize it to double the current \n
             // capacity, faster runtime when adding elements
@@ -254,6 +270,9 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     void MyContainer<T>::remove(const T &element) {
+        if (activeIterators > 0) {
+            throw ActiveIterator("Cannot modify container during iteration");
+        }
         size_t new_size = 0;
         bool found = false;
 
@@ -391,6 +410,7 @@ namespace MyContainerNamespace {
         delete[] sorted;
         return result;
     }
+
     /**
      * Private method to create a middle out copy of the container.
      * @return a pointer to a new array containing the elements in middle out order
@@ -413,22 +433,48 @@ namespace MyContainerNamespace {
         return result;
     }
 
+    /**
+     * Creates a sorted copy of the container using a custom comparator.
+     * @tparam Comparator A callable that defines the sort order.
+     * @param comp The comparator function or functor.
+     * @return A pointer to the newly sorted array.
+     */
+    template<typename T>
+    template<typename Comparator>
+    T *MyContainer<T>::createSortedCopyWith(Comparator comp) const {
+        T *sorted = new T[_size];
+        std::copy(elements, elements + _size, sorted);
+        std::sort(sorted, sorted + _size, comp);
+        return sorted;
+    }
+
 
     /**
      * Constructor for Iterator
+     * @param container Pointer to the parent container.
      * @param start Pointer to the start of the container
      * @param current Pointer to the current element in the container
      * @param end Last element in the container (one past the last valid element)
      */
     template<typename T>
-    MyContainer<T>::Iterator::Iterator(T *start, T *current, T *end) : start(start), current(current), end(end) {
+    MyContainer<T>::Iterator::Iterator(MyContainer<T> *container, T *start, T *current, T *end)
+        : start(start), current(current), end(end), container(container) {
+        if (container) {
+            container->activeIterators++;
+        }
     }
+
 
     /**
      * Destructor for Iterator, only a pointer is deleted, no need to delete the elements
      */
     template<typename T>
-    MyContainer<T>::Iterator::~Iterator() = default;
+    MyContainer<T>::Iterator::~Iterator() {
+        if (container) {
+            container->activeIterators--;
+        }
+    }
+
 
     /**
      * Copy constructor for Iterator
@@ -436,9 +482,13 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     MyContainer<T>::Iterator::Iterator(const Iterator &other) {
+        this->container = other.container;
         this->start = other.start;
         this->current = other.current;
         this->end = other.end;
+        if (container) {
+            container->activeIterators++;
+        }
     }
 
     /**
@@ -504,12 +554,20 @@ namespace MyContainerNamespace {
     template<typename T>
     typename MyContainer<T>::Iterator &MyContainer<T>::Iterator::operator=(const Iterator &other) {
         if (this != &other) {
+            if (container) {
+                container->activeIterators--;
+            }
+            this->container = other.container;
             this->start = other.start;
             this->current = other.current;
             this->end = other.end;
+            if (container) {
+                container->activeIterators++;
+            }
         }
         return *this;
     }
+
 
     /**
      * Pointer operator to access the current element.
@@ -572,7 +630,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::begin() {
-        return Iterator(&elements[0], &elements[0], &elements[_size]);
+        return Iterator(this, &elements[0], &elements[0], &elements[_size]);
     }
 
     /**
@@ -580,7 +638,21 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::end() {
-        return Iterator(&elements[0], &elements[_size], &elements[_size]);
+        return Iterator(this, &elements[0], &elements[_size], &elements[_size]);
+    }
+
+    /**
+     * @param val The value to search for.
+     * @return Iterator to the value if found, otherwise end().
+     */
+    template<typename T>
+    typename MyContainer<T>::Iterator MyContainer<T>::find(const T &val) {
+        for (auto it = begin(); it != end(); ++it) {
+            if (*it == val) {
+                return it;
+            }
+        }
+        return end(); // Value not found
     }
 
     /**
@@ -593,7 +665,7 @@ namespace MyContainerNamespace {
             delete[] orderedCopy;
         }
         orderedCopy = createSortedCopyAscending();
-        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -602,7 +674,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endAscendingOrder() {
-        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -615,7 +687,7 @@ namespace MyContainerNamespace {
             delete[] orderedCopy;
         }
         orderedCopy = createSortedCopyDescending();
-        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -624,7 +696,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endDescendingOrder() {
-        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -637,7 +709,7 @@ namespace MyContainerNamespace {
             delete[] orderedCopy;
         }
         orderedCopy = createReverseCopy();
-        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -646,7 +718,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endReverseOrder() {
-        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -655,7 +727,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::beginOrder() {
-        return Iterator(elements, elements, elements + _size);
+        return Iterator(this, elements, elements, elements + _size);
     }
 
     /**
@@ -664,7 +736,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endOrder() {
-        return Iterator(elements, elements + _size, elements + _size);
+        return Iterator(this, elements, elements + _size, elements + _size);
     }
 
     /**
@@ -677,7 +749,7 @@ namespace MyContainerNamespace {
             delete[] orderedCopy;
         }
         orderedCopy = createSideCrossCopy();
-        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -686,7 +758,7 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endSideCrossOrder() {
-        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
     /**
@@ -699,7 +771,7 @@ namespace MyContainerNamespace {
             delete[] orderedCopy;
         }
         orderedCopy = createMiddleOutCopy();
-        return Iterator(orderedCopy, orderedCopy, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
     }
 
     /**
@@ -708,7 +780,29 @@ namespace MyContainerNamespace {
      */
     template<typename T>
     typename MyContainer<T>::Iterator MyContainer<T>::endMiddleOutOrder() {
-        return Iterator(orderedCopy, orderedCopy + _size, orderedCopy + _size);
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
     }
 
+    /**
+     * Returns an iterator to the beginning of a sorted view using the given comparator.
+     * @tparam Comparator A callable that defines the sort order.
+     * @param comp The comparator function or functor.
+     * @return Iterator pointing to the first element of the sorted view.
+     */
+    template<typename T>
+    template<typename Comparator>
+    typename MyContainer<T>::Iterator MyContainer<T>::beginSortedWith(Comparator comp) {
+        if (orderedCopy) delete[] orderedCopy;
+        orderedCopy = createSortedCopyWith(comp);
+        return Iterator(this, orderedCopy, orderedCopy, orderedCopy + _size);
+    }
+
+    /**
+     * Returns an iterator to the end of the sorted view created with beginSortedWith.
+     * @return Iterator pointing past the last element of the sorted view.
+     */
+    template<typename T>
+    typename MyContainer<T>::Iterator MyContainer<T>::endSortedWith() {
+        return Iterator(this, orderedCopy, orderedCopy + _size, orderedCopy + _size);
+    }
 }
