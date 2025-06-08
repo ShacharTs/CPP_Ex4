@@ -176,13 +176,7 @@ namespace MyContainerNamespace {
         }
     }
 
-    template<typename T>
-    T *MyContainer<T>::createSortedCopyAscending() const {
-        T *sorted = new T[_size];
-        copy(elements, elements + _size, sorted);
-        sort(sorted, sorted + _size);
-        return sorted;
-    }
+
 
 
     /**
@@ -342,7 +336,19 @@ namespace MyContainerNamespace {
 
     /**
      * Private method to create a sorted copy of the container in ascending order.
-     * @return a pointer to a new array containing the sorted elements
+     * @return a pointer to a new array containing the sorted elements in ascending order
+     */
+    template<typename T>
+    T *MyContainer<T>::createSortedCopyAscending() const {
+        T *sorted = new T[_size];
+        copy(elements, elements + _size, sorted);
+        sort(sorted, sorted + _size);
+        return sorted;
+    }
+
+    /**
+     * Private method to create a sorted copy of the container in descending order.
+     * @return a pointer to a new array containing the sorted elements in descending order
      */
     template<typename T>
     T *MyContainer<T>::createSortedCopyDescending() const {
